@@ -1,23 +1,19 @@
 import "../css/Game.css";
+import Board from "./Board";
+import Header from "./Header";
+import Keyboard from "./Keyboard";
+import { GameProvider } from "../GameContext";
 
-function Game() {
+const Game = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      <GameProvider>
+        <Board />
+        <Keyboard />
+      </GameProvider>
     </div>
   );
-}
+};
 
 export default Game;
