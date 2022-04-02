@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import { GameContext } from "../GameContext";
+import { isAValidGuess, guessEqualsWordle } from "../utils";
 
 const keys = [
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -14,43 +15,98 @@ const keyboardStyles = {
   mt: 3,
 };
 
-// Keyboard accesses game state to decide which WordRow is active
-// Keyboard then targets that state in the Board
-
 const Keyboard = () => {
   const [game, setGame, board, setBoard] = useContext(GameContext);
-  const { activeWordRow } = game;
-
-  const handleClick = (e) => {
-    const activeTileIndex = findActiveTileIndex();
-    const keyPressed = e.target.dataset.key;
-
-    // TODO: Split logic here depending on if keyPressed is return, delete, or a character
-
-    const newBoard = [...board];
-    newBoard[activeWordRow][activeTileIndex].character = keyPressed;
-    setBoard(newBoard);
-    setActiveTile(keyPressed);
-  };
-
-  // TODO: Consider moving active tile to global state
+  let { activeWordRowIndex } = game;
 
   const findActiveTileIndex = () => {
-    const wordRow = board[activeWordRow];
+    const wordRow = board[activeWordRowIndex];
     const tileIndex = wordRow.findIndex((tile) => tile.active === true);
     return tileIndex;
   };
 
-  const setActiveTile = (keyPressed) => {
-    const activeTileIndex = findActiveTileIndex();
-    // when a user enters a character, add 1 to the active tile index
-    if (keyPressed != "←" && keyPressed != "↵") {
-      const newIndex = activeTileIndex + 1;
-      // if the new index would put the user over 5 tiles, return early
-      if (newIndex > 4) return;
-      board[activeWordRow][activeTileIndex].active = false;
-      board[activeWordRow][newIndex].active = true;
+  const [activeTileIndex, setActiveTileIndex] = useState(findActiveTileIndex());
+
+  const handleClick = (e) => {
+    const keyPressed = e.target.dataset.key;
+
+    switch (keyPressed) {
+      case "←":
+        handleCharacterDelete();
+        break;
+      case "↵":
+        handleRowSubmit();
+        break;
+      default:
+        handleCharacterPress(keyPressed);
     }
+  };
+
+  const handleCharacterDelete = () => {
+    if (activeTileIndex === 0) return;
+
+    const newBoard = [...board];
+    newBoard[activeWordRowIndex][activeTileIndex - 1].character = "";
+
+    setBoard(newBoard);
+    setActiveTileIndex(activeTileIndex - 1);
+  };
+
+  const handleRowSubmit = () => {
+    // TODO: display user error if guess is less than 5 letters
+    // for now just return
+    if (activeTileIndex < 5) return;
+
+    const userGuessTiles = board[activeWordRowIndex];
+    const userGuess = userGuessTiles.reduce((word, tile) => {
+      return word + tile.character;
+    }, "");
+
+    /* 
+    If the user guess is a valid word, we want to do a few things
+    we ALWAYS want to colorize the tiles
+    check the guess against the current wordle
+    three options: 
+      1. Guess matches the worldle: user wins, end the game
+      2. Guess does not match the wordle AND it's not the last row: increment the active row
+      3. Guess does not match wordle, AND it's the last row: user loses, end game
+    */
+
+    if (isAValidGuess(userGuess)) {
+      // TODO: insert colorizeTiles function here
+      if (guessEqualsWordle(userGuess, game.wordle)) {
+        startWinSequence(game.wordle);
+      } else if (activeWordRowIndex != 5) {
+        activeWordRowIndex += 1;
+        const newGameState = { ...game };
+        newGameState.activeWordRowIndex = activeWordRowIndex;
+        setGame(newGameState);
+        setActiveTileIndex(0);
+      } else {
+        startLoseSequence(game.wordle);
+      }
+    } else {
+      // TODO: display user error that their guess is not valid
+      console.log("not a valid guess!");
+      return;
+    }
+  };
+
+  const startWinSequence = (wordle) => {
+    console.log(`You got the wordle: ${wordle}`);
+  };
+
+  const startLoseSequence = (wordle) => {
+    console.log(`You lost! The wordle was ${wordle}`);
+  };
+
+  const handleCharacterPress = (keyPressed) => {
+    if (activeTileIndex === 5) return;
+
+    const newBoard = [...board];
+    newBoard[activeWordRowIndex][activeTileIndex].character = keyPressed;
+    setBoard(newBoard);
+    setActiveTileIndex(activeTileIndex + 1);
   };
 
   return (

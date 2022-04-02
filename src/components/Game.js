@@ -1,3 +1,4 @@
+import React from "react";
 import "../css/Game.css";
 import Board from "./Board";
 import Header from "./Header";

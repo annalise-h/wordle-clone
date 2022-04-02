@@ -1,7 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import WordRow from "./WordRow";
 import Container from "@mui/material/Container";
-import { GameContext } from "../GameContext";
 
 const boardStyles = {
   display: "grid",
@@ -13,13 +12,7 @@ const boardStyles = {
   mt: 2,
 };
 
-/** Board will receive "board" context from context api 
-Board will decide which WordRow is active depending on context 
-**/
-
 const Board = () => {
-  const board = useContext(GameContext)[2];
-
   return (
     <Container sx={boardStyles}>
       <WordRow rowNum={0} />
