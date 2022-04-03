@@ -3,7 +3,11 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import { GameContext } from "../GameContext";
-import { isAValidGuess, guessEqualsWordle } from "../utils";
+import {
+  isAValidGuess,
+  guessEqualsWordle,
+  assignTileProximities,
+} from "../utils";
 
 const keys = [
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -73,7 +77,9 @@ const Keyboard = () => {
     */
 
     if (isAValidGuess(userGuess)) {
-      // TODO: insert colorizeTiles function here
+      const tiles = [...board[activeWordRowIndex]];
+      assignTileProximities(tiles, game.wordle, userGuess);
+
       if (guessEqualsWordle(userGuess, game.wordle)) {
         startWinSequence(game.wordle);
       } else if (activeWordRowIndex != 5) {
