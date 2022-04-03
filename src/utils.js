@@ -1,11 +1,11 @@
 import allowedGuesses from "./allowedGuesses";
 
 export const isAValidGuess = (guess) => {
-  return allowedGuesses.includes(guess);
+  return allowedGuesses.includes(guess.toLowerCase());
 };
 
 export const guessEqualsWordle = (guess, wordle) => {
-  return guess === wordle;
+  return guess.toLowerCase() === wordle;
 };
 
 export const assignTileProximities = (tiles, wordle) => {
@@ -28,12 +28,20 @@ export const assignTileProximities = (tiles, wordle) => {
       // if there is no index match, that guess character is close
       // we also check to make sure the proximity has not been assigned as "good"
       else {
-        const matchedTile = tilesWithProximities.find(
-          (tile) => tile.character === char && !tile.guessProximity
-        );
-        if (!matchedTile.guessProximity) matchedTile.guessProximity = "close";
+        const matchedTile = tilesWithProximities.find((tile) => {
+          return tile.character === char && !tile.guessProximity;
+        });
+        if (matchedTile && !matchedTile.guessProximity)
+          matchedTile.guessProximity = "close";
       }
     }
+  });
+
+  // at this point all our "close" and "good" guesses should have proximities
+  // now we just assign "bad" to the remaining guesses
+  tilesWithProximities.map((tile) => {
+    if (!tile.guessProximity) tile.guessProximity = "bad";
+    return tile;
   });
 
   return tilesWithProximities;
