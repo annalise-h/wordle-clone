@@ -1,6 +1,7 @@
 import React from "react";
 import WordRow from "./WordRow";
 import Container from "@mui/material/Container";
+import "../css/Game.css";
 
 const boardStyles = {
   display: "grid",
@@ -14,7 +15,11 @@ const boardStyles = {
 
 const Board = () => {
   return (
-    <Container sx={boardStyles} data-testid="board-container">
+    <Container
+      sx={boardStyles}
+      data-testid="board-container"
+      id="board-container"
+    >
       <WordRow rowNum={0} />
       <WordRow rowNum={1} />
       <WordRow rowNum={2} />
