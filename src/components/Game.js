@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import "../css/Game.css";
 
 import Board from "./Board";
 import GameOverModal from "./GameOverModal";

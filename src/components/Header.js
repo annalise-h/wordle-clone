@@ -6,10 +6,16 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import HistoryIcon from "@mui/icons-material/History";
 import { Link } from "react-router-dom";
 
+const headerStyles = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+};
+
 function Header() {
   return (
     <AppBar position="static" color="inherit" data-testid="header">
-      <Toolbar>
+      <Toolbar sx={headerStyles}>
         <Link to="/about">
           <HelpOutlineIcon fontSize="large" data-testid="help-icon" />
         </Link>

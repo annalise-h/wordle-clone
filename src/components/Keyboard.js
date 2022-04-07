@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import { GameContext } from "../GameContext";
+import "../css/Game.css";
 import {
   isAValidGuess,
   guessEqualsWordle,
@@ -16,10 +17,6 @@ const keyboardStyles = {
   mt: 3,
   mx: "auto",
   p: 0,
-};
-
-const keyStyles = {
-  minWidth: { xs: 30, md: 50 },
 };
 
 const Keyboard = () => {
@@ -144,14 +141,14 @@ const Keyboard = () => {
   };
 
   return (
-    <Container data-testid="keyboard">
+    <Container data-testid="keyboard" id="keyboard" sx={{ p: { xs: 0 } }}>
       <Box sx={keyboardStyles}>
         {keys.map((keyRow, index) => (
           <div id={"row" + (index + 1)} key={index} className="keyboard-row">
             {keyRow.map((char, index) => {
               return (
                 <Button
-                  sx={keyStyles}
+                  sx={{ minWidth: 2 }}
                   variant="contained"
                   className="key"
                   data-key={char}

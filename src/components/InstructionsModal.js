@@ -4,21 +4,20 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-import "../css/Game.css";
+import "../css/InstructionModal.css";
 
 const modalStyle = {
-  display: "flex",
-  flexDirection: "column",
   position: "absolute",
-  top: "50%",
+  top: { xs: "40%", sm: "40%", md: "50%" },
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: { xs: "50%", sm: "350px" },
+  width: { xs: "80%", sm: "350px" },
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
   mt: 2,
+  fontFamily: "Roboto",
 };
 
 const tileStyle = {
@@ -126,7 +125,7 @@ const InstructionsModal = () => {
               The letter <strong>U</strong> is not in the word in any spot.
             </p>
           </div>
-          <Link to="/">
+          <Link to="/" style={{ display: "block", textAlign: "center" }}>
             <Button> Let's Play! </Button>
           </Link>
         </Box>

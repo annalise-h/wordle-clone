@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import "../css/Game.css";
 
 const styles = {
   display: "flex",
@@ -29,13 +30,13 @@ const History = () => {
     );
   } else {
     return (
-      <Container>
+      <Container id="history-container">
         <Box>
           {history.map((game, index) => {
             return (
               <Card variant="outlined" key={index} sx={{ maxWidth: 350 }}>
                 <CardContent>
-                  <p>{game.dateTimeCompleted}</p>
+                  <p> Completed: {game.dateTimeCompleted}</p>
                   <p> {game.guesses}/6 Guesses</p>
                   <p>Wordle: {game.wordle.toUpperCase()}</p>
                   <p>Status: {game.won ? "Won :)" : "Lost :("}</p>
