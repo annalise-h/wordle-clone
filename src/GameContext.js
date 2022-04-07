@@ -1,14 +1,14 @@
 import React, { useState, createContext } from "react";
 import wordList from "./wordleCandidates";
 
-function Tile(active) {
+export function Tile(active) {
   this.character = "";
   this.guessProximity = "";
   this.active = active;
 }
 
 // create a nested array of 6 rows with 5 tiles each for default board
-function Board() {
+export function Board() {
   const grid = [];
   for (let i = 0; i < 6; i++) {
     grid.push([]);
@@ -22,27 +22,47 @@ function Board() {
   return grid;
 }
 
-const generateWordle = () => {
+function getActiveGame() {
+  return JSON.parse(localStorage.getItem("currentGame"));
+}
+
+function getActiveBoard() {
+  return JSON.parse(localStorage.getItem("currentBoard"));
+}
+
+// TODO: Remove a wordle from the list if it's been played already
+// possibly check the games in local storage to not repeat words
+export const generateWordle = () => {
   const wordle = wordList[Math.floor(Math.random() * wordList.length)];
   return wordle;
 };
 
-function Game() {
-  this.wordle = generateWordle();
+export function Game(wordle) {
+  this.wordle = wordle || generateWordle();
   this.completed = false;
-  this.guesses = [];
+  this.dateTimeCompleted = "";
+  this.won = false;
+  this.guesses = 0;
   this.activeWordRowIndex = 0;
+  this.gameOverModalOpen = false;
+  this.instructionsModalOpen = false;
 }
 
 export const GameContext = createContext();
 
 export const GameProvider = (props) => {
-  const [game, setGame] = useState(new Game());
-
-  const [board, setBoard] = useState(new Board());
+  const [gameState, setGame] = useState(getActiveGame() || new Game());
+  const [boardState, setBoard] = useState(getActiveBoard() || new Board());
+  const [historyState, setHistory] = useState([]);
 
   return (
-    <GameContext.Provider value={[game, setGame, board, setBoard]}>
+    <GameContext.Provider
+      value={{
+        gameState: [gameState, setGame],
+        boardState: [boardState, setBoard],
+        historyState: [historyState, setHistory],
+      }}
+    >
       {props.children}
     </GameContext.Provider>
   );

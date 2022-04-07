@@ -7,20 +7,32 @@ import {
   isAValidGuess,
   guessEqualsWordle,
   assignTileProximities,
+  saveInProgressGame,
+  clearInProgressGame,
+  saveCompletedGame,
 } from "../utils";
-
-const keys = [
-  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-  ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-  ["↵", "Z", "X", "C", "V", "B", "N", "M", "←"],
-];
 
 const keyboardStyles = {
   mt: 3,
+  mx: "auto",
+  p: 0,
+};
+
+const keyStyles = {
+  minWidth: { xs: 30, md: 50 },
 };
 
 const Keyboard = () => {
-  const [game, setGame, board, setBoard] = useContext(GameContext);
+  const keys = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["↵", "Z", "X", "C", "V", "B", "N", "M", "←"],
+  ];
+
+  const { gameState, boardState } = useContext(GameContext);
+  const [game, setGame] = gameState;
+  const [board, setBoard] = boardState;
+
   let { activeWordRowIndex } = game;
 
   const findActiveTileIndex = () => {
@@ -47,7 +59,7 @@ const Keyboard = () => {
   };
 
   const handleCharacterDelete = () => {
-    if (activeTileIndex === 0) return;
+    if (activeTileIndex === 0 || game.completed) return;
 
     const newBoard = [...board];
     newBoard[activeWordRowIndex][activeTileIndex - 1].character = "";
@@ -59,7 +71,7 @@ const Keyboard = () => {
   const handleRowSubmit = () => {
     // TODO: display user error if guess is less than 5 letters
     // for now just return
-    if (activeTileIndex < 5) return;
+    if (activeTileIndex < 5 || game.completed) return;
 
     const userGuessTiles = board[activeWordRowIndex];
     const userGuess = userGuessTiles.reduce((word, tile) => {
@@ -77,19 +89,29 @@ const Keyboard = () => {
     */
 
     if (isAValidGuess(userGuess)) {
+      setActiveTileIndex(0);
+      // colorize tiles
       const tiles = [...board[activeWordRowIndex]];
       const tilesWithProximities = assignTileProximities(tiles, game.wordle);
+      const newBoard = [...board];
+      newBoard[activeWordRowIndex] = tilesWithProximities;
+      setBoard(newBoard);
 
       if (guessEqualsWordle(userGuess, game.wordle)) {
-        startWinSequence(game.wordle);
+        clearInProgressGame();
+        setActiveTileIndex(activeTileIndex + 1);
+        openGameOverModal("won");
       } else if (activeWordRowIndex != 5) {
         activeWordRowIndex += 1;
         const newGameState = { ...game };
         newGameState.activeWordRowIndex = activeWordRowIndex;
+        newGameState.guesses += 1;
+        saveInProgressGame(newGameState, newBoard);
         setGame(newGameState);
-        setActiveTileIndex(0);
       } else {
-        startLoseSequence(game.wordle);
+        clearInProgressGame();
+        setActiveTileIndex(activeTileIndex + 1);
+        openGameOverModal("lost");
       }
     } else {
       // TODO: display user error that their guess is not valid
@@ -98,16 +120,22 @@ const Keyboard = () => {
     }
   };
 
-  const startWinSequence = (wordle) => {
-    console.log(`You got the wordle: ${wordle}`);
-  };
-
-  const startLoseSequence = (wordle) => {
-    console.log(`You lost! The wordle was ${wordle}`);
+  const openGameOverModal = (gameStatus) => {
+    setActiveTileIndex(0);
+    const gameWon = gameStatus === "won" ? true : false;
+    const newGameState = { ...game };
+    newGameState.dateTimeCompleted = new Date().toLocaleString();
+    newGameState.completed = true;
+    newGameState.completed = true;
+    newGameState.won = gameWon;
+    newGameState.gameOverModalOpen = true;
+    newGameState.guesses += 1;
+    saveCompletedGame(newGameState);
+    setGame(newGameState);
   };
 
   const handleCharacterPress = (keyPressed) => {
-    if (activeTileIndex === 5) return;
+    if (activeTileIndex > 4 || game.completed) return;
 
     const newBoard = [...board];
     newBoard[activeWordRowIndex][activeTileIndex].character = keyPressed;
@@ -116,13 +144,14 @@ const Keyboard = () => {
   };
 
   return (
-    <Container id="keyboard">
+    <Container data-testid="keyboard">
       <Box sx={keyboardStyles}>
         {keys.map((keyRow, index) => (
           <div id={"row" + (index + 1)} key={index} className="keyboard-row">
             {keyRow.map((char, index) => {
               return (
                 <Button
+                  sx={keyStyles}
                   variant="contained"
                   className="key"
                   data-key={char}

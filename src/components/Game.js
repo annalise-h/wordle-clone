@@ -1,19 +1,18 @@
-import React from "react";
+import React, { Fragment } from "react";
 import "../css/Game.css";
+
 import Board from "./Board";
-import Header from "./Header";
+import GameOverModal from "./GameOverModal";
 import Keyboard from "./Keyboard";
 import { GameProvider } from "../GameContext";
 
 const Game = () => {
   return (
-    <div className="App">
-      <Header />
-      <GameProvider>
-        <Board />
-        <Keyboard />
-      </GameProvider>
-    </div>
+    <GameProvider>
+      <Board />
+      <Keyboard />
+      <GameOverModal />
+    </GameProvider>
   );
 };
 

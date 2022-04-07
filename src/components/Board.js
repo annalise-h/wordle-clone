@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import WordRow from "./WordRow";
 import Container from "@mui/material/Container";
 
@@ -14,7 +14,7 @@ const boardStyles = {
 
 const Board = () => {
   return (
-    <Container sx={boardStyles}>
+    <Container sx={boardStyles} data-testid="board-container">
       <WordRow rowNum={0} />
       <WordRow rowNum={1} />
       <WordRow rowNum={2} />

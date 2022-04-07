@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { GameContext } from "../GameContext";
 import Box from "@mui/material/Box";
+import "./WordRow.css";
 
 const tileStyle = {
   display: "inline",
@@ -15,7 +16,8 @@ const tileStyle = {
 };
 
 const WordRow = (props) => {
-  const board = useContext(GameContext)[2];
+  const { boardState } = useContext(GameContext);
+  const [board, setBoard] = boardState;
 
   const rowTiles = board[props.rowNum];
 
@@ -23,7 +25,7 @@ const WordRow = (props) => {
     <>
       {rowTiles.map((tile, index) => {
         return (
-          <Box sx={tileStyle} key={index}>
+          <Box sx={tileStyle} key={index} className={tile.guessProximity}>
             {tile.character}
           </Box>
         );

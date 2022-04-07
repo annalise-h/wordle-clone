@@ -1,4 +1,5 @@
 import allowedGuesses from "./allowedGuesses";
+import { Board, Game, generateWordle } from "./GameContext";
 
 export const isAValidGuess = (guess) => {
   return allowedGuesses.includes(guess.toLowerCase());
@@ -15,7 +16,7 @@ export const assignTileProximities = (tiles, wordle) => {
     (acc, tileObj) => acc.concat(tileObj.character),
     []
   );
-  const wordleCharArray = wordle.split("");
+  const wordleCharArray = wordle.toUpperCase().split("");
 
   wordleCharArray.forEach((char, index) => {
     // for each character in the wordle, check it against our guess characters array
@@ -45,4 +46,28 @@ export const assignTileProximities = (tiles, wordle) => {
   });
 
   return tilesWithProximities;
+};
+
+export const saveInProgressGame = (game, board) => {
+  localStorage.setItem("currentGame", JSON.stringify(game));
+  localStorage.setItem("currentBoard", JSON.stringify(board));
+};
+
+export const clearInProgressGame = () => {
+  localStorage.removeItem("currentGame");
+  localStorage.removeItem("currentBoard");
+};
+
+export const saveCompletedGame = (game) => {
+  let history = JSON.parse(localStorage.getItem("history")) || [];
+  history.push(game);
+  localStorage.setItem("history", JSON.stringify(history));
+};
+
+export const resetGameState = () => {
+  const newWordle = generateWordle();
+  const newGame = new Game(newWordle);
+  const newBoard = new Board();
+
+  return [newGame, newBoard];
 };
